@@ -7,10 +7,12 @@ beforeAll((done) => {
   db = new sqlite3.Database(':memory:');
   db.run(`CREATE TABLE birds (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tag_number TEXT UNIQUE,
     breed TEXT,
     age INTEGER,
     weight REAL,
-move    status TEXT
+    status TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`, (err) => {
     if (err) return done(err);
     done();
