@@ -1,0 +1,91 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_REGISTRY = 'your-registry'
+        BACKEND_IMAGE = '${DOCKER_REGISTRY}/poultry-backend'
+        ENV_SERVICE_IMAGE = '${DOCKER_REGISTRY}/poultry-environment-service'
+        HEALTH_SERVICE_IMAGE = '${DOCKER_REGISTRY}/poultry-health-service'
+        KUBE_CONFIG = credentials('kubernetes-config')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh 'npm test'
+            }
+        }
+
+        stage('Build Images') {
+            parallel {
+                stage('Build Backend') {
+                    steps {
+                        sh "docker build -t ${BACKEND_IMAGE}:${BUILD_NUMBER} -t ${BACKEND_IMAGE}:latest ."
+                    }
+                }
+                stage('Build Environment Service') {
+                    steps {
+                        sh "docker build -t ${ENV_SERVICE_IMAGE}:${BUILD_NUMBER} -t ${ENV_SERVICE_IMAGE}:latest -f Dockerfile.environment ."
+                    }
+                }
+                stage('Build Health Service') {
+                    steps {
+                        sh "docker build -t ${HEALTH_SERVICE_IMAGE}:${BUILD_NUMBER} -t ${HEALTH_SERVICE_IMAGE}:latest -f Dockerfile.health ."
+                    }
+                }
+            }
+        }
+
+        stage('Push Images') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-registry-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} -p ${DOCKER_PASS}
+                        docker push ${BACKEND_IMAGE}:${BUILD_NUMBER}
+                        docker push ${BACKEND_IMAGE}:latest
+                        docker push ${ENV_SERVICE_IMAGE}:${BUILD_NUMBER}
+                        docker push ${ENV_SERVICE_IMAGE}:latest
+                        docker push ${HEALTH_SERVICE_IMAGE}:${BUILD_NUMBER}
+                        docker push ${HEALTH_SERVICE_IMAGE}:latest
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                withKubeConfig([credentialsId: 'kubernetes-config']) {
+                    sh '''
+                        kubectl apply -f k8s/backend-deployment.yaml
+                        kubectl apply -f k8s/microservice-deployment.yaml
+                        kubectl apply -f k8s/nginx-ingress.yaml
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}

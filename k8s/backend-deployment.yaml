@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: poultry-backend
+  labels:
+    app: poultry-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: poultry-backend
+  template:
+    metadata:
+      labels:
+        app: poultry-backend
+    spec:
+      containers:
+      - name: poultry-backend
+        image: poultry-backend:latest
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: DB_PATH
+          value: "/app/data/poultry.db"
+        volumeMounts:
+        - name: db-storage
+          mountPath: /app/data
+      volumes:
+      - name: db-storage
+        persistentVolumeClaim:
+          claimName: poultry-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: poultry-backend-service
+spec:
+  selector:
+    app: poultry-backend
+  ports:
+  - port: 80
+    targetPort: 3000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: poultry-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

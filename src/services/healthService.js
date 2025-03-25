@@ -1,42 +1,79 @@
-const db = require('../config/database');
+const db = process.env.NODE_ENV === 'test' ? require('../config/test-database') : require('../config/database');
 
 class HealthService {
-    // Get all health records
-    static getAllRecords() {
+    static async recordHealthCheck(birdId, data) {
         return new Promise((resolve, reject) => {
-            db.all('SELECT * FROM health ORDER BY recorded_at DESC', [], (err, rows) => {
+            db.get('SELECT id FROM birds WHERE id = ?', [birdId], (err, bird) => {
                 if (err) reject(err);
-                resolve(rows);
+                if (!bird) reject(new Error('Bird not found'));
+                
+                db.run(
+                    'INSERT INTO health (bird_id, condition, treatment, medication) VALUES (?, ?, ?, ?)',
+                    [birdId, data.condition, data.treatment, data.medication],
+                    function(err) {
+                        if (err) reject(err);
+                        resolve({ id: this.lastID, bird_id: birdId, ...data });
+                    }
+                );
             });
         });
     }
 
-    // Get health records for a specific bird
-    static getBirdHealthRecords(birdId) {
+    static async getHealthHistory(birdId) {
         return new Promise((resolve, reject) => {
             db.all(
                 'SELECT * FROM health WHERE bird_id = ? ORDER BY recorded_at DESC',
                 [birdId],
                 (err, rows) => {
                     if (err) reject(err);
-                    resolve(rows);
+                    resolve(rows || []);
                 }
             );
         });
     }
 
-    // Add new health record
-    static addRecord(data) {
-        const { bird_id, condition, treatment, medication } = data;
+    static async updateHealthRecord(recordId, updates) {
         return new Promise((resolve, reject) => {
-            db.run(
-                'INSERT INTO health (bird_id, condition, treatment, medication) VALUES (?, ?, ?, ?)',
-                [bird_id, condition, treatment, medication],
-                function(err) {
-                    if (err) reject(err);
-                    resolve({ id: this.lastID, ...data });
+            db.get('SELECT * FROM health WHERE id = ?', [recordId], (err, record) => {
+                if (err) reject(err);
+                if (!record) reject(new Error('Health record not found'));
+
+                const updateFields = [];
+                const updateValues = [];
+                for (const [key, value] of Object.entries(updates)) {
+                    if (value !== undefined) {
+                        updateFields.push(`${key} = ?`);
+                        updateValues.push(value);
+                    }
                 }
-            );
+
+                if (updateFields.length === 0) {
+                    resolve(record);
+                    return;
+                }
+
+                updateValues.push(recordId);
+                db.run(
+                    `UPDATE health SET ${updateFields.join(', ')} WHERE id = ?`,
+                    updateValues,
+                    (err) => {
+                        if (err) reject(err);
+                        db.get('SELECT * FROM health WHERE id = ?', [recordId], (err, updatedRecord) => {
+                            if (err) reject(err);
+                            resolve(updatedRecord);
+                        });
+                    }
+                );
+            });
+        });
+    }
+
+    static async deleteHealthRecord(recordId) {
+        return new Promise((resolve, reject) => {
+            db.run('DELETE FROM health WHERE id = ?', [recordId], (err) => {
+                if (err) reject(err);
+                resolve();
+            });
         });
     }
 

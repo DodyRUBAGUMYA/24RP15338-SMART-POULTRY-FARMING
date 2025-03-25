@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: environment-service
+  labels:
+    app: environment-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: environment-service
+  template:
+    metadata:
+      labels:
+        app: environment-service
+    spec:
+      containers:
+      - name: environment-service
+        image: poultry-environment-service:latest
+        ports:
+        - containerPort: 3001
+        resources:
+          limits:
+            cpu: "300m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3001
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        env:
+        - name: NODE_ENV
+          value: "production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: environment-service
+spec:
+  selector:
+    app: environment-service
+  ports:
+  - port: 80
+    targetPort: 3001
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: health-service
+  labels:
+    app: health-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: health-service
+  template:
+    metadata:
+      labels:
+        app: health-service
+    spec:
+      containers:
+      - name: health-service
+        image: poultry-health-service:latest
+        ports:
+        - containerPort: 3002
+        resources:
+          limits:
+            cpu: "300m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3002
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        env:
+        - name: NODE_ENV
+          value: "production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: health-service
+spec:
+  selector:
+    app: health-service
+  ports:
+  - port: 80
+    targetPort: 3002
+  type: ClusterIP
