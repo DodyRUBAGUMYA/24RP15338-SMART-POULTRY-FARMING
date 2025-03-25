@@ -21,8 +21,8 @@ class BirdService {
         });
     }
 
-    // Add a new bird
-    static addBird(birdData) {
+    // Create a new bird
+    static createBird(birdData) {
         const { tag_number, breed, age, weight, status } = birdData;
         return new Promise((resolve, reject) => {
             db.run(

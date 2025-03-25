@@ -1,44 +1,41 @@
 # Smart Poultry Farming System
 
-A modern solution for managing poultry farms with real-time monitoring and automated control systems.
+A modern microservices-based system for managing poultry farming operations efficiently.
 
 ## Overview
 
-This project is a comprehensive poultry farm management system that helps farmers monitor and control their poultry operations. It includes features for tracking bird health, managing environmental conditions, and monitoring feed consumption.
+This system helps poultry farmers monitor and manage their birds, track environmental conditions, manage feeding schedules, and monitor bird health in real-time.
 
 ## Features
 
-- Bird health monitoring and tracking
-- Environmental control (temperature, humidity, ventilation)
-- Feed management system
-- Real-time data collection and analysis
-- Automated alerts and notifications
+- Bird Management (tracking, monitoring)
+- Environmental Monitoring
+- Feed Management
+- Health Monitoring
+- Real-time Data Collection
 
-## System Architecture
+## Tech Stack
 
-The system is built using a microservices architecture with the following components:
-
-- Backend Service: Main application server
-- Environment Service: Monitors and controls environmental conditions
-- Health Service: Tracks bird health metrics
-
-All services are containerized using Docker and can be deployed using Kubernetes.
+- Node.js & Express.js
+- SQLite Database
+- Docker Support
+- Kubernetes Ready
+- Jenkins Pipeline
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (v14 or higher)
-- Docker
-- Kubernetes cluster (for production deployment)
-- npm or yarn package manager
+- Node.js (Latest LTS version)
+- npm or yarn
+- Docker (optional)
 
-### Local Development Setup
+### Local Setup
 
 1. Clone the repository:
    ```bash
-   git clone [repository-url]
-   cd poultry-farming-system
+   git clone https://github.com/DodyRUBAGUMYA/24RP15338-SMART-POULTRY-FARMING.git
+   cd 24RP15338-SMART-POULTRY-FARMING
    ```
 
 2. Install dependencies:
@@ -46,24 +43,46 @@ All services are containerized using Docker and can be deployed using Kubernetes
    npm install
    ```
 
-3. Set up the database:
+3. Start the server:
    ```bash
-   npm run setup-db
-   ```
-
-4. Start the development server:
-   ```bash
-   npm run dev
+   npm start
    ```
 
 ### Docker Setup
 
-1. Build and run using Docker Compose:
+1. Build the container:
    ```bash
-   docker-compose up --build
+   docker build -t smart-poultry-farm .
    ```
 
-This will start all required services in containers.
+2. Run with Docker Compose:
+   ```bash
+   docker-compose up
+   ```
+
+## API Endpoints
+
+### Birds Management
+
+- `GET /api/birds` - Get all birds
+- `GET /api/birds/:id` - Get bird by ID
+- `POST /api/birds` - Add new bird
+- `PUT /api/birds/:id` - Update bird details
+
+### Environment Monitoring
+
+- `GET /api/environment` - Get environmental data
+- `POST /api/environment` - Record new environmental data
+
+### Feed Management
+
+- `GET /api/feed` - Get feeding records
+- `POST /api/feed` - Add new feeding record
+
+### Health Monitoring
+
+- `GET /api/health` - Get health records
+- `POST /api/health` - Add new health record
 
 ## Testing
 
@@ -74,42 +93,15 @@ npm test
 
 ## Deployment
 
-### Using Kubernetes
-
-1. Apply the Kubernetes configurations:
-   ```bash
-   kubectl apply -f k8s/backend-deployment.yaml
-   kubectl apply -f k8s/microservice-deployment.yaml
-   kubectl apply -f k8s/nginx-ingress.yaml
-   ```
-
-### CI/CD Pipeline
-
-The project uses Jenkins for continuous integration and deployment:
-
-1. Automated testing
-2. Docker image building
-3. Image pushing to registry
-4. Kubernetes deployment
-
-The pipeline configuration can be found in `jenkins/Jenkinsfile`.
-
-## Project Structure
-
-```
-├── src/
-│   ├── config/         # Configuration files
-│   ├── services/       # Microservices
-│   └── tests/          # Test files
-├── k8s/                # Kubernetes configurations
-├── jenkins/           # CI/CD configurations
-└── docker-compose.yml  # Docker compose configuration
-```
+The system can be deployed using:
+- Docker containers
+- Kubernetes cluster (configuration in k8s folder)
+- Jenkins pipeline (configuration in jenkins folder)
 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch
+2. Create your feature branch
 3. Commit your changes
 4. Push to the branch
-5. Create a Pull Request
+5. Create a new Pull Request

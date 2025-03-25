@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">23.63% </span>
+                <span class="strong">3.63% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>13/55</span>
+                <span class='fraction'>2/55</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">20% </span>
+                <span class="strong">3.33% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>6/30</span>
+                <span class='fraction'>1/30</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>7/21</span>
+                <span class='fraction'>0/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">29.54% </span>
+                <span class="strong">4.54% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>13/44</span>
+                <span class='fraction'>2/44</span>
             </div>
         
             
@@ -175,31 +175,31 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -282,32 +282,32 @@
 <span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">const db = process.env.NODE_ENV === 'test' ? require('../config/test-database') : <span class="branch-1 cbranch-no" title="branch not covered" >require('../config/database');</span>
 &nbsp;
 class HealthService {
-    static async recordHealthCheck(birdId, data) {
-        return new Promise((resolve, reject) =&gt; {
-            db.get('SELECT id FROM birds WHERE id = ?', [birdId], (err, bird) =&gt; {
-                <span class="missing-if-branch" title="if path not taken" >I</span>if (err) <span class="cstat-no" title="statement not covered" >reject(err);</span>
-                <span class="missing-if-branch" title="if path not taken" >I</span>if (!bird) <span class="cstat-no" title="statement not covered" >reject(new Error('Bird not found'));</span>
+<span class="fstat-no" title="function not covered" >    st</span>atic async recordHealthCheck(birdId, data) {
+<span class="cstat-no" title="statement not covered" >        return new Promise(<span class="fstat-no" title="function not covered" >(r</span>esolve, reject) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >            db.get('SELECT id FROM birds WHERE id = ?', [birdId], <span class="fstat-no" title="function not covered" >(e</span>rr, bird) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                if (err) <span class="cstat-no" title="statement not covered" >reject(err);</span></span>
+<span class="cstat-no" title="statement not covered" >                if (!bird) <span class="cstat-no" title="statement not covered" >reject(new Error('Bird not found'));</span></span>
                 
-                db.run(
+<span class="cstat-no" title="statement not covered" >                db.run(</span>
                     'INSERT INTO health (bird_id, condition, treatment, medication) VALUES (?, ?, ?, ?)',
                     [birdId, data.condition, data.treatment, data.medication],
-                    function(err) {
-                        <span class="missing-if-branch" title="if path not taken" >I</span>if (err) <span class="cstat-no" title="statement not covered" >reject(err);</span>
-                        resolve({ id: this.lastID, bird_id: birdId, ...data });
+<span class="fstat-no" title="function not covered" >                    fu</span>nction(err) {
+<span class="cstat-no" title="statement not covered" >                        if (err) <span class="cstat-no" title="statement not covered" >reject(err);</span></span>
+<span class="cstat-no" title="statement not covered" >                        resolve({ id: this.lastID, bird_id: birdId, ...data });</span>
                     }
                 );
             });
         });
     }
 &nbsp;
-    static async getHealthHistory(birdId) {
-        return new Promise((resolve, reject) =&gt; {
-            db.all(
+<span class="fstat-no" title="function not covered" >    st</span>atic async getHealthHistory(birdId) {
+<span class="cstat-no" title="statement not covered" >        return new Promise(<span class="fstat-no" title="function not covered" >(r</span>esolve, reject) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >            db.all(</span>
                 'SELECT * FROM health WHERE bird_id = ? ORDER BY recorded_at DESC',
                 [birdId],
-                (err, rows) =&gt; {
-                    <span class="missing-if-branch" title="if path not taken" >I</span>if (err) <span class="cstat-no" title="statement not covered" >reject(err);</span>
-                    resolve(rows || <span class="branch-1 cbranch-no" title="branch not covered" >[])</span>;
+<span class="fstat-no" title="function not covered" >                (e</span>rr, rows) =&gt; {
+<span class="cstat-no" title="statement not covered" >                    if (err) <span class="cstat-no" title="statement not covered" >reject(err);</span></span>
+<span class="cstat-no" title="statement not covered" >                    resolve(rows || []);</span>
                 }
             );
         });
@@ -394,7 +394,7 @@ module.exports = HealthService;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-03-25T00:25:29.466Z
+                at 2025-03-25T01:04:05.106Z
             </div>
         <script src="../prettify.js"></script>
         <script>

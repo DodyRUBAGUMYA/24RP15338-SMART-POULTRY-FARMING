@@ -1,6 +1,24 @@
 const db = require('../config/database');
 
 class EnvironmentService {
+    static async init() {
+        return new Promise((resolve, reject) => {
+            db.serialize(() => {
+                db.run('PRAGMA foreign_keys = ON');
+                db.run(`CREATE TABLE IF NOT EXISTS environment (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    temperature REAL,
+                    humidity REAL,
+                    ammonia_level REAL,
+                    light_intensity REAL,
+                    recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )`, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
+        });
+    }
     // Get all environment records
     static getAllRecords() {
         return new Promise((resolve, reject) => {

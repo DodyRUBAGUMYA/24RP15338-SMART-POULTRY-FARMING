@@ -1,4 +1,4 @@
-const db = process.env.NODE_ENV === 'test' ? require('../config/test-database') : require('../config/database');
+const db = require('../config/database');
 
 class HealthService {
     static async recordHealthCheck(birdId, data) {
